@@ -5,6 +5,8 @@ dependencies — plain HTML/CSS/JS, one directory per page.
 
 - `index.html` — hub listing the in-browser tools and the open-source Chrome extensions
 - `table-to-csv/` — paste an HTML table, get CSV / TSV / Markdown, rowspan/colspan expanded
+- `nonogram-no-guess-check/` — article: why a unique-solution nonogram can still force a guess,
+  and the line-solvable check that catches it
 - `robots.txt`, `sitemap.xml` — crawlable by default; add every new page to the sitemap
 
 ## Rules for pages added here

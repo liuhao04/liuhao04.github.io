@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why "unique solution" is not enough for a nonogram puzzle</title>
+<meta name="description" content="A nonogram can have exactly one solution and still be unsolvable without guessing. Worked example, the property that actually matters (line-solvable, not just unique), and how to check for it.">
+<link rel="canonical" href="https://liuhao04.github.io/nonogram-no-guess-check/">
+<meta property="og:title" content="Why &quot;unique solution&quot; is not enough for a nonogram puzzle">
+<meta property="og:description" content="A worked 5x5 example that has one solution and still needs a guess, plus the stronger check that catches it.">
+<meta property="og:url" content="https://liuhao04.github.io/nonogram-no-guess-check/">
+<style>
+  :root{--bg:#fff;--fg:#16181d;--mut:#5b6270;--line:#e3e6ec;--acc:#1f5fbf;--card:#f7f8fa}
+  @media (prefers-color-scheme:dark){:root{--bg:#14161a;--fg:#e8eaee;--mut:#a0a7b4;--line:#2b2f37;--acc:#7aa7f0;--card:#1b1e24}}
+  *{box-sizing:border-box}
+  body{margin:0;padding:2.5rem 1.25rem 4rem;background:var(--bg);color:var(--fg);
+       font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  main{max-width:42rem;margin:0 auto}
+  h1{font-size:1.6rem;margin:0 0 .35rem;line-height:1.3}
+  p.lede{color:var(--mut);margin:0 0 2rem}
+  h2{font-size:1.15rem;margin:2.2rem 0 .75rem}
+  p,li{margin:0 0 1rem}
+  pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.85rem 1rem;
+      overflow-x:auto;font-size:.86rem;line-height:1.5}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  table{border-collapse:collapse;margin:0 0 1rem}
+  table th,table td{border:1px solid var(--line);padding:.4rem .7rem;text-align:left;font-size:.92rem}
+  .back{font-size:.9rem;margin-bottom:2rem;display:inline-block}
+  footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--line);color:var(--mut);font-size:.92rem}
+  footer p{margin:0 0 .6rem}
+  a{color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="/">&larr; liuhao04.github.io</a>
+<h1>Why "unique solution" is not enough for a nonogram puzzle</h1>
+<p class="lede">A puzzle generator can guarantee exactly one solution and still hand you a page
+where you have to guess. Here is a five-by-five that proves it, the property that actually
+rules that out, and how to check for it yourself.</p>
+
+<h2>The two properties</h2>
+<p><strong>One solution.</strong> Exactly one grid of filled and empty squares satisfies the clues.</p>
+<p><strong>Solvable without guessing.</strong> There is an order in which you can work through the
+rows and columns where, at every step, the clues on some single line force at least one more
+square. You never have to assume anything.</p>
+<p>The second property implies the first. The first does not imply the second.</p>
+
+<h2>A five-by-five that has one solution and still needs a guess</h2>
+<p>The solution picture, with <code>#</code> for a filled square:</p>
+<pre>     col clues:  1 2   2   2   1 1   1 2
+
+ 1 1     #     .     .     .     #
+   1     .     .     .     #     .
+ 1 1     #     .     .     .     #
+ 3 1     #     #     #     .     #
+   3     .     #     #     #     .</pre>
+<p>The five row clues are <code>1 1</code>, <code>1</code>, <code>1 1</code>, <code>3 1</code>,
+<code>3</code>; the five column clues are <code>1 2</code>, <code>2</code>, <code>2</code>,
+<code>1 1</code>, <code>1 2</code>.</p>
+<p>Exactly one grid satisfies those clues &mdash; an exhaustive search confirms the count is one,
+not two. A generator that filters on uniqueness alone passes this puzzle and prints it.</p>
+<p>Now try to solve it. Work along every row, then every column, filling in only squares the
+clues force, and repeat until nothing more moves. You get <strong>13 of the 25 squares</strong>
+and then you are stuck: twelve squares are still blank and no single row or column can settle
+any of them. To finish, you have to pick a square, assume a value, and follow it until the grid
+either completes or contradicts itself. That is guessing, and if you guess wrong you erase and
+start the branch over.</p>
+<p>Where the deduction runs out, with <code>?</code> for the squares line logic cannot reach:</p>
+<pre> 1 1     #     .     .     ?     ?
+   1     .     .     .     ?     ?
+ 1 1     ?     ?     .     ?     ?
+ 3 1     #     #     #     .     #
+   3     ?     ?     #     ?     ?</pre>
+
+<h2>Why the stronger check is the one that matters</h2>
+<p>Nobody solving a puzzle book wants a search problem. A puzzle that stalls reads as broken even
+when it is technically fine, because the solver cannot tell "I am missing a deduction" from
+"there is no deduction available here." Either way, it looks like the book has an error &mdash;
+and on paper, a wrong branch means a page of crossings-out with no way to undo it.</p>
+
+<h2>The check</h2>
+<p>Only write down a square when every arrangement of a line's clue that is still consistent with
+what is already known agrees on that square. Anything written this way is true in every
+solution, which is why finishing the grid this way also proves the solution is unique. Process
+the whole grid one line at a time and repeat until nothing changes. If every square gets
+settled, the puzzle passes. If the process stalls with blanks remaining, reject it &mdash;
+whether or not it happens to have a unique solution.</p>
+<p>There are three possible verdicts, not two:</p>
+<table>
+<tr><th>verdict</th><th>meaning</th></tr>
+<tr><td><code>no-guess</code></td><td>line logic finishes the grid; accepted</td></tr>
+<tr><td><code>unique-but-needs-guessing</code></td><td>exactly one solution, but line logic stalls; rejected</td></tr>
+<tr><td><code>ambiguous</code></td><td>more than one solution; rejected</td></tr>
+</table>
+<p>This is a well-known technique in constraint-solving circles (it is exactly line-and-column
+constraint propagation, no search), but most puzzle generators skip the "keep going until nothing
+moves, then check nothing is left blank" step and stop at uniqueness because uniqueness is
+cheaper to compute. The cost of skipping it lands on the solver, three-quarters of the way
+through the grid, in pen.</p>
+
+<footer>
+<p>I write puzzle books and kept hitting this exact wall, so I built a command-line tool that
+runs this check on every puzzle before it goes in a book: point it at a folder of your own
+pictures and it returns a print-ready interior PDF where every single puzzle is graded
+<code>no-guess</code>, with a repair pass for the ones that would otherwise fail and a report of
+what it changed. Runs on macOS/Windows/Linux, Python only, nothing to install beyond that.</p>
+<p><a href="https://payhip.com/b/enbgi">No-Guess Nonogram Toolkit on Payhip</a> &mdash; $29, self-test included so you can verify the claim above on your own machine before trusting it on your own puzzles.</p>
+</footer>
+</main>
+</body>
+</html>
