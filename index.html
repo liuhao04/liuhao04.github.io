@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Small free tools — browser extensions and in-page utilities</title>
+<meta name="description" content="Free, open-source Chrome extensions and single-page browser tools: table to CSV/Markdown, PDF dark mode, PDF renaming, timezone conversion, recipe jump, YouTube frame capture. MIT licensed, no accounts, no telemetry.">
+<link rel="canonical" href="https://liuhao04.github.io/">
+<meta property="og:title" content="Small free tools — browser extensions and in-page utilities">
+<meta property="og:description" content="Open-source Chrome extensions and in-browser utilities. MIT, no accounts, no telemetry.">
+<meta property="og:url" content="https://liuhao04.github.io/">
+<style>
+  :root{--bg:#fff;--fg:#16181d;--mut:#5b6270;--line:#e3e6ec;--acc:#1f5fbf;--card:#f7f8fa}
+  @media (prefers-color-scheme:dark){:root{--bg:#14161a;--fg:#e8eaee;--mut:#a0a7b4;--line:#2b2f37;--acc:#7aa7f0;--card:#1b1e24}}
+  *{box-sizing:border-box}
+  body{margin:0;padding:2.5rem 1.25rem 4rem;background:var(--bg);color:var(--fg);
+       font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  main{max-width:48rem;margin:0 auto}
+  h1{font-size:1.75rem;margin:0 0 .35rem}
+  p.lede{color:var(--mut);margin:0 0 2rem}
+  h2{font-size:1.05rem;margin:2.4rem 0 .75rem;letter-spacing:.02em;text-transform:uppercase;color:var(--mut)}
+  ul{list-style:none;padding:0;margin:0}
+  li{border:1px solid var(--line);border-radius:9px;padding:.85rem 1rem;margin:0 0 .6rem;background:var(--card)}
+  li a{font-weight:600;color:var(--acc);text-decoration:none}
+  li a:hover{text-decoration:underline}
+  li p{margin:.25rem 0 0;color:var(--mut);font-size:.93rem}
+  .src{font-size:.85rem}
+  footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--mut);font-size:.88rem}
+  a{color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<h1>Small free tools</h1>
+<p class="lede">Single-purpose utilities that do one thing without an account, a subscription, or a
+server round trip. Every one is MIT licensed with the source in the open.</p>
+
+<h2>Run in this browser, nothing to install</h2>
+<ul>
+  <li><a href="/table-to-csv/">Paste a table, get CSV / TSV / Markdown</a>
+    <p>Copy a table off any page and paste it here. Merged cells are expanded so every row has the
+    same column count. Nothing is uploaded.</p></li>
+</ul>
+
+<h2>Chrome extensions</h2>
+<ul>
+  <li><a href="https://github.com/liuhao04/table-to-excel-extension">Table to Excel / CSV / Markdown</a>
+    <p>Export any HTML table to XLSX, CSV or Markdown. No row cap, merged cells expanded.
+    <span class="src"><a href="https://github.com/liuhao04/table-to-excel-extension">source</a> ·
+    <a href="https://liuhao04.github.io/table-to-excel-extension/privacy.html">privacy</a></span></p></li>
+  <li><a href="https://github.com/liuhao04/pdf-dark-mode-extension">PDF Dark Mode</a>
+    <p>Dark mode for any PDF in Chrome, including PDFs served from the web — not only
+    <code>file://</code> ones. No server, no telemetry.
+    <span class="src"><a href="https://github.com/liuhao04/pdf-dark-mode-extension">source</a> ·
+    <a href="https://liuhao04.github.io/pdf-dark-mode-extension/privacy.html">privacy</a></span></p></li>
+  <li><a href="https://github.com/liuhao04/pdf-smart-rename-extension">Smart PDF Rename</a>
+    <p>Rename PDFs from what is inside them: title, author, year, arXiv ID, DOI, invoice number.
+    Batch, fully local.
+    <span class="src"><a href="https://github.com/liuhao04/pdf-smart-rename-extension">source</a> ·
+    <a href="https://liuhao04.github.io/pdf-smart-rename-extension/privacy.html">privacy</a></span></p></li>
+  <li><a href="https://github.com/liuhao04/timezone-convert-extension">Timezone Convert</a>
+    <p>Highlight “3pm EST” on any page, right-click, read your local time in place.
+    DST and CST/IST ambiguity handled. Works offline.
+    <span class="src"><a href="https://github.com/liuhao04/timezone-convert-extension">source</a> ·
+    <a href="https://liuhao04.github.io/timezone-convert-extension/privacy.html">privacy</a></span></p></li>
+  <li><a href="https://github.com/liuhao04/jump-to-recipe-extension">Jump to Recipe</a>
+    <p>Instant recipe card from a food blog. Reads the page’s own schema.org data instead of
+    guessing, so it does not break the page.
+    <span class="src"><a href="https://github.com/liuhao04/jump-to-recipe-extension">source</a> ·
+    <a href="https://liuhao04.github.io/jump-to-recipe-extension/privacy.html">privacy</a></span></p></li>
+  <li><a href="https://github.com/liuhao04/youtube-frame-capture-extension">YouTube Frame Capture</a>
+    <p>Screenshot YouTube at full playback resolution without the black-frame problem.
+    Alt+S, PNG or JPEG, Shorts supported.
+    <span class="src"><a href="https://github.com/liuhao04/youtube-frame-capture-extension">source</a> ·
+    <a href="https://liuhao04.github.io/youtube-frame-capture-extension/privacy.html">privacy</a></span></p></li>
+</ul>
+
+<footer>
+All source at <a href="https://github.com/liuhao04">github.com/liuhao04</a>. MIT licensed.
+No analytics on this site: no tracker, no external font, no CDN.
+</footer>
+</main>
+</body>
+</html>

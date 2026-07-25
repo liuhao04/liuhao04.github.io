@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paste a Table, Get CSV / TSV / Markdown — free, in-browser, no upload</title>
+<meta name="description" content="Paste any table copied from a web page, PDF viewer, or spreadsheet and get clean CSV, TSV or Markdown. Merged cells (rowspan/colspan) are expanded. Runs entirely in your browser: nothing is uploaded.">
+<link rel="canonical" href="https://liuhao04.github.io/table-to-csv/">
+<meta property="og:title" content="Paste a Table, Get CSV / TSV / Markdown">
+<meta property="og:description" content="Free in-browser table converter. Merged cells expanded. Nothing uploaded.">
+<meta property="og:url" content="https://liuhao04.github.io/table-to-csv/">
+<meta property="og:type" content="website">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Paste a Table, Get CSV / TSV / Markdown","url":"https://liuhao04.github.io/table-to-csv/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"In-browser converter that turns a pasted HTML table into CSV, TSV or Markdown, expanding rowspan and colspan."}
+</script>
+<style>
+  :root{--bg:#fff;--fg:#16181d;--mut:#5b6270;--line:#e3e6ec;--acc:#1f5fbf;--card:#f7f8fa}
+  @media (prefers-color-scheme:dark){:root{--bg:#14161a;--fg:#e8eaee;--mut:#a0a7b4;--line:#2b2f37;--acc:#7aa7f0;--card:#1b1e24}}
+  *{box-sizing:border-box}
+  body{margin:0;padding:2rem 1.25rem 4rem;background:var(--bg);color:var(--fg);
+       font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  main{max-width:52rem;margin:0 auto}
+  h1{font-size:1.6rem;line-height:1.25;margin:0 0 .4rem}
+  p.lede{color:var(--mut);margin:0 0 1.5rem}
+  #drop{border:2px dashed var(--line);border-radius:10px;padding:1.1rem;min-height:6.5rem;
+        background:var(--card);overflow:auto}
+  #drop:focus{outline:2px solid var(--acc);outline-offset:2px}
+  #drop table{border-collapse:collapse;font-size:.85rem}
+  #drop td,#drop th{border:1px solid var(--line);padding:.2rem .4rem}
+  .row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:1rem 0}
+  button{font:inherit;padding:.45rem .9rem;border:1px solid var(--line);border-radius:7px;
+         background:var(--bg);color:var(--fg);cursor:pointer}
+  button.p{background:var(--acc);border-color:var(--acc);color:#fff}
+  button:disabled{opacity:.45;cursor:default}
+  textarea{width:100%;min-height:14rem;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+           padding:.75rem;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg)}
+  .note{color:var(--mut);font-size:.88rem}
+  .ok{color:#1a7f4b}
+  h2{font-size:1.1rem;margin:2.2rem 0 .5rem}
+  a{color:var(--acc)}
+  footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--mut);font-size:.88rem}
+  code{background:var(--card);padding:.1rem .3rem;border-radius:4px}
+</style>
+</head>
+<body>
+<main>
+<h1>Paste a table, get CSV, TSV or Markdown</h1>
+<p class="lede">Select a table on any web page, copy it, and paste it into the box below.
+Merged cells (<code>rowspan</code>/<code>colspan</code>) are expanded so every row has the same number of
+columns. Everything runs in your browser — nothing is uploaded anywhere.</p>
+
+<div id="drop" contenteditable="true" role="textbox" aria-label="Paste your table here"
+     data-ph="Click here and press Cmd-V / Ctrl-V"></div>
+
+<div class="row">
+  <button class="p" id="csv">CSV</button>
+  <button id="tsv">TSV</button>
+  <button id="md">Markdown</button>
+  <button id="copy" disabled>Copy output</button>
+  <button id="dl" disabled>Download .csv</button>
+  <span class="note" id="stat"></span>
+</div>
+
+<textarea id="out" readonly placeholder="Output appears here."></textarea>
+
+<h2>Why merged cells matter</h2>
+<p>Most copy-paste routes drop the geometry of merged cells: a header spanning three columns lands in
+one cell and every column to its right shifts left by two. This page walks the table the way a browser
+lays it out, so a cell with <code>colspan="3"</code> becomes three cells with the same text, and a cell
+with <code>rowspan="2"</code> is repeated on the following row. The result is a rectangular grid that
+imports into Excel, Numbers, Sheets, pandas or R without manual repair.</p>
+
+<h2>What this does not do</h2>
+<p>It reads the table you paste, nothing more. It cannot log in to a site, page through results, or
+follow links. If you need a button on the page itself, or you need every table on a page at once, the
+Chrome extension below does that; its source is public and it works offline too.</p>
+
+<h2>Frequently asked</h2>
+<p><strong>Does anything leave my computer?</strong> No. There is no network code on this page — no
+analytics, no fonts, no CDN. Open the network tab and you will see one request: this HTML file.</p>
+<p><strong>Numbers with commas?</strong> CSV output quotes any field containing a comma, quote or
+newline, and doubles inner quotes, per RFC 4180.</p>
+<p><strong>Several tables at once?</strong> Paste them all; each is converted in order and separated by
+a blank line.</p>
+
+<footer>
+Open source companion to
+<a href="https://github.com/liuhao04/table-to-excel-extension">table-to-excel-extension</a> (MIT) —
+a Chrome extension that adds a one-click export to any table on any page, including XLSX.
+</footer>
+</main>
+
+<script>
+(function(){
+  var drop=document.getElementById('drop'), out=document.getElementById('out'),
+      stat=document.getElementById('stat'), copyBtn=document.getElementById('copy'),
+      dlBtn=document.getElementById('dl');
+  var grids=[], lastKind='csv';
+
+  function ph(){ if(!drop.textContent.trim() && !drop.querySelector('table'))
+    drop.innerHTML='<span style="color:var(--mut)">'+drop.dataset.ph+'</span>'; }
+  ph();
+  drop.addEventListener('focus',function(){ var s=drop.querySelector('span'); if(s&&drop.children.length===1) drop.innerHTML=''; });
+  drop.addEventListener('blur',ph);
+
+  // Expand a table into a rectangular array of strings, honouring rowspan/colspan.
+  function gridOf(table){
+    var occ=[], g=[];
+    var rows=table.rows;
+    for(var r=0;r<rows.length;r++){
+      occ[r]=occ[r]||[]; g[r]=g[r]||[];
+      var c=0;
+      for(var i=0;i<rows[r].cells.length;i++){
+        while(occ[r][c]) c++;
+        var cell=rows[r].cells[i];
+        var txt=(cell.innerText||cell.textContent||'').replace(/\s+/g,' ').trim();
+        var cs=Math.max(1,cell.colSpan||1), rs=Math.max(1,cell.rowSpan||1);
+        for(var dr=0;dr<rs;dr++){
+          occ[r+dr]=occ[r+dr]||[]; g[r+dr]=g[r+dr]||[];
+          for(var dc=0;dc<cs;dc++){ occ[r+dr][c+dc]=1; g[r+dr][c+dc]=txt; }
+        }
+        c+=cs;
+      }
+    }
+    var w=0; g.forEach(function(row){ if(row.length>w) w=row.length; });
+    return g.map(function(row){ var o=[]; for(var i=0;i<w;i++) o.push(row[i]==null?'':row[i]); return o; });
+  }
+
+  function collect(){
+    grids=[].map.call(drop.querySelectorAll('table'),gridOf).filter(function(g){return g.length;});
+    if(!grids.length){
+      var lines=(drop.innerText||'').split(/\n/).map(function(l){return l.trim();}).filter(Boolean);
+      if(lines.length>1 && lines.some(function(l){return /\t/.test(l);}))
+        grids=[lines.map(function(l){return l.split('\t');})];
+    }
+    return grids;
+  }
+
+  function csvField(s){ return /[",\n\r]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }
+  function toCSV(g){ return g.map(function(r){return r.map(csvField).join(',');}).join('\n'); }
+  function toTSV(g){ return g.map(function(r){return r.map(function(s){return s.replace(/\t/g,' ');}).join('\t');}).join('\n'); }
+  function toMD(g){
+    if(!g.length) return '';
+    var w=g[0].length, esc=function(s){return s.replace(/\|/g,'\\|');};
+    var o=['| '+g[0].map(esc).join(' | ')+' |','|'+Array(w+1).join(' --- |')];
+    for(var i=1;i<g.length;i++) o.push('| '+g[i].map(esc).join(' | ')+' |');
+    return o.join('\n');
+  }
+
+  function render(kind){
+    lastKind=kind;
+    var gs=collect();
+    if(!gs.length){ out.value=''; stat.textContent='No table found in what you pasted.';
+      copyBtn.disabled=dlBtn.disabled=true; return; }
+    var fn = kind==='md'?toMD : kind==='tsv'?toTSV : toCSV;
+    out.value=gs.map(fn).join('\n\n');
+    var cells=gs.reduce(function(a,g){return a+g.length*(g[0]?g[0].length:0);},0);
+    stat.innerHTML='<span class="ok">'+gs.length+' table'+(gs.length>1?'s':'')+', '+
+                   gs[0].length+'×'+gs[0][0].length+' first grid, '+cells+' cells.</span>';
+    copyBtn.disabled=dlBtn.disabled=false;
+    dlBtn.textContent='Download .'+(kind==='md'?'md':kind);
+  }
+
+  document.getElementById('csv').onclick=function(){render('csv');};
+  document.getElementById('tsv').onclick=function(){render('tsv');};
+  document.getElementById('md').onclick=function(){render('md');};
+  drop.addEventListener('paste',function(){ setTimeout(function(){render(lastKind);},30); });
+  copyBtn.onclick=function(){ out.select(); document.execCommand('copy');
+    copyBtn.textContent='Copied'; setTimeout(function(){copyBtn.textContent='Copy output';},1200); };
+  dlBtn.onclick=function(){
+    var ext=lastKind==='md'?'md':lastKind,
+        mime=lastKind==='md'?'text/markdown':(lastKind==='tsv'?'text/tab-separated-values':'text/csv'),
+        b=new Blob([out.value],{type:mime+';charset=utf-8'}), a=document.createElement('a');
+    a.href=URL.createObjectURL(b); a.download='table.'+ext; a.click(); URL.revokeObjectURL(a.href);
+  };
+})();
+</script>
+</body>
+</html>
