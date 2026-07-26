@@ -1,18 +1,18 @@
-# liuhao04.github.io
+# liuhao04.github.io — redirect shell only
 
-Static site for small free tools. No build step, no Jekyll (`.nojekyll` is present), no
-dependencies — plain HTML/CSS/JS, one directory per page.
+The content moved to **https://minty-modesty.github.io/** (a neutral GitHub organisation).
+Nothing new is published here.
 
-- `index.html` — hub listing the in-browser tools and the open-source Chrome extensions
-- `table-to-csv/` — paste an HTML table, get CSV / TSV / Markdown, rowspan/colspan expanded
-- `nonogram-no-guess-check/` — article: why a unique-solution nonogram can still force a guess,
-  and the line-solvable check that catches it
-- `robots.txt`, `sitemap.xml` — crawlable by default; add every new page to the sitemap
+This repository is kept alive on purpose: the old URLs were submitted to IndexNow and Google
+Search Console, and six of them were also filed as privacy-policy URLs in the Chrome Web Store.
+Deleting them would turn live references into dead links. So every path here is a stub that
+carries `rel=canonical` plus a `meta refresh` to its new address:
 
-## Rules for pages added here
+- `/` , `/table-to-csv/` , `/nonogram-no-guess-check/` — the three pages that used to live here
+- `/<extension>/index.html` and `/<extension>/privacy.html` for the six extensions whose
+  repositories (and therefore their project Pages sites) moved to the organisation
 
-1. **Self-contained.** No CDN, no external font, no analytics. A page must work offline once loaded.
-2. **Real utility before any link out.** The tool works fully on the page; links to extensions or
-   books sit at the bottom, never behind a gate.
-3. **Every new page gets** a `<title>`, a `meta description`, a `link rel=canonical`, and a
-   `sitemap.xml` entry — otherwise it is not discoverable and does not belong here.
+Also kept: `googlec66ab11295e96deb.html` and the `google-site-verification` meta tag on `/`
+(so the old Search Console property stays verified while Google processes the move) and
+`912cd37ca8ec6aec4299a06773f57a0e.txt` (IndexNow key), and `sitemap.xml` still lists the old
+URLs on purpose — that is what makes crawlers revisit them and pick up the redirects.

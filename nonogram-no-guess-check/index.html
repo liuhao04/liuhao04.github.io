@@ -3,130 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Why "unique solution" is not enough for a nonogram puzzle</title>
-<meta name="description" content="A nonogram can have exactly one solution and still not be finishable one row or column at a time. Worked example, the property that actually matters (line-solvable, not just unique), and how to check for it.">
-<link rel="canonical" href="https://liuhao04.github.io/nonogram-no-guess-check/">
-<meta property="og:title" content="Why &quot;unique solution&quot; is not enough for a nonogram puzzle">
-<meta property="og:description" content="A worked 5x5 example that has one solution and still stalls line-by-line logic, plus the stronger check that catches it.">
-<meta property="og:url" content="https://liuhao04.github.io/nonogram-no-guess-check/">
+<title>Moved — Why a unique-solution nonogram can still force a guess</title>
+<link rel="canonical" href="https://minty-modesty.github.io/nonogram-no-guess-check/">
+<meta http-equiv="refresh" content="0; url=https://minty-modesty.github.io/nonogram-no-guess-check/">
+<meta name="robots" content="noindex, follow">
 <style>
-  :root{--bg:#fff;--fg:#16181d;--mut:#5b6270;--line:#e3e6ec;--acc:#1f5fbf;--card:#f7f8fa}
-  @media (prefers-color-scheme:dark){:root{--bg:#14161a;--fg:#e8eaee;--mut:#a0a7b4;--line:#2b2f37;--acc:#7aa7f0;--card:#1b1e24}}
-  *{box-sizing:border-box}
-  body{margin:0;padding:2.5rem 1.25rem 4rem;background:var(--bg);color:var(--fg);
+  body{margin:0;padding:3rem 1.25rem;background:#fff;color:#16181d;
        font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-  main{max-width:42rem;margin:0 auto}
-  h1{font-size:1.6rem;margin:0 0 .35rem;line-height:1.3}
-  p.lede{color:var(--mut);margin:0 0 2rem}
-  h2{font-size:1.15rem;margin:2.2rem 0 .75rem}
-  p,li{margin:0 0 1rem}
-  pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.85rem 1rem;
-      overflow-x:auto;font-size:.86rem;line-height:1.5}
-  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-  table{border-collapse:collapse;margin:0 0 1rem}
-  table th,table td{border:1px solid var(--line);padding:.4rem .7rem;text-align:left;font-size:.92rem}
-  .back{font-size:.9rem;margin-bottom:2rem;display:inline-block}
-  footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--line);color:var(--mut);font-size:.92rem}
-  footer p{margin:0 0 .6rem}
-  a{color:var(--acc)}
+  @media (prefers-color-scheme:dark){body{background:#14161a;color:#e8eaee}}
+  main{max-width:38rem;margin:0 auto}
+  a{color:#1f5fbf} @media (prefers-color-scheme:dark){a{color:#7aa7f0}}
 </style>
 </head>
 <body>
 <main>
-<a class="back" href="/">&larr; liuhao04.github.io</a>
-<h1>Why "unique solution" is not enough for a nonogram puzzle</h1>
-<p class="lede">A puzzle generator can guarantee exactly one solution and still hand you a page
-that stops dead if you work it one row and one column at a time. Here is a five-by-five, the
-property that actually rules that out, and how to check for it yourself.</p>
-
-<h2 id="correction">Correction, 26 July 2026</h2>
-<p>An earlier version of this page said the five-by-five below <em>forces you to guess</em>. That
-was wrong, and a reader on r/nonograms was right to say so. The grid can be finished with no
-guessing at all: suppose a square is filled, follow the consequences to a contradiction, and you
-have proved it empty. That is deduction. Applied to the twelve squares where line logic stops, it
-finishes the grid in one sweep.</p>
-<p>What is true of the grid is narrower, and it is what this page now claims: <strong>line logic
-alone does not finish it.</strong> That is still strictly stronger than a uniqueness check, and it
-is still the property worth testing if you print puzzles for people solving in pencil. But "not
-line-solvable" and "requires a guess" are different statements, and I had conflated my own
-solver's ceiling with a property of nonograms.</p>
-
-<h2>The three properties</h2>
-<p><strong>One solution.</strong> Exactly one grid of filled and empty squares satisfies the clues.</p>
-<p><strong>Line-solvable.</strong> There is an order in which you can work through the rows and
-columns where, at every step, the clues on some single line force at least one more square. You
-look at one line at a time and never suppose anything.</p>
-<p><strong>Forcing-solvable.</strong> Finishable by deduction, but some steps need the whole grid
-at once: suppose a square, propagate, take the contradiction. Not guessing, but a different and
-much harder skill.</p>
-<p>Line-solvable implies forcing-solvable implies one solution. Neither implication runs
-backwards.</p>
-
-<h2>A five-by-five that has one solution and still stalls line logic</h2>
-<p>The solution picture, with <code>#</code> for a filled square:</p>
-<pre>     col clues:  1 2   2   2   1 1   1 2
-
- 1 1     #     .     .     .     #
-   1     .     .     .     #     .
- 1 1     #     .     .     .     #
- 3 1     #     #     #     .     #
-   3     .     #     #     #     .</pre>
-<p>The five row clues are <code>1 1</code>, <code>1</code>, <code>1 1</code>, <code>3 1</code>,
-<code>3</code>; the five column clues are <code>1 2</code>, <code>2</code>, <code>2</code>,
-<code>1 1</code>, <code>1 2</code>.</p>
-<p>Exactly one grid satisfies those clues &mdash; an exhaustive search confirms the count is one,
-not two. A generator that filters on uniqueness alone passes this puzzle and prints it.</p>
-<p>Now try to solve it. Work along every row, then every column, filling in only squares the
-clues force, and repeat until nothing more moves. You get <strong>13 of the 25 squares</strong>
-and then line logic is out of moves: twelve squares are still blank and no single row or column
-can settle any of them on its own.</p>
-<p>Going further means reasoning across lines: suppose one of those blanks is filled, push the
-consequences through the grid, and a contradiction proves it empty. That finishes all twelve at
-once, so the puzzle never required a guess. It is, though, a large step up in what the reader has
-to do, and someone working in pen at the kitchen table is more likely to reach for trial and error
-and then conclude the page is misprinted.</p>
-<p>Where the deduction runs out, with <code>?</code> for the squares line logic cannot reach:</p>
-<pre> 1 1     #     .     .     ?     ?
-   1     .     .     .     ?     ?
- 1 1     ?     ?     .     ?     ?
- 3 1     #     #     #     .     #
-   3     ?     ?     #     ?     ?</pre>
-
-<h2>Why the stronger check is the one that matters</h2>
-<p>Nobody solving a puzzle book wants a search problem, and most are not looking for a proof
-technique either. A puzzle that stalls reads as broken even when it is technically fine, because
-the solver cannot tell "I am missing a deduction" from "there is no line-level deduction available
-here." Either way, it looks like the book has an error, and on paper a wrong branch means a page
-of crossings-out with no way to undo it.</p>
-
-<h2>The check</h2>
-<p>Only write down a square when every arrangement of a line's clue that is still consistent with
-what is already known agrees on that square. Anything written this way is true in every
-solution, which is why finishing the grid this way also proves the solution is unique. Process
-the whole grid one line at a time and repeat until nothing changes. If every square gets
-settled, the puzzle passes. If the process stalls with blanks remaining, reject it &mdash;
-whether or not it happens to have a unique solution.</p>
-<p>There are three possible verdicts, not two:</p>
-<table>
-<tr><th>verdict</th><th>meaning</th></tr>
-<tr><td><code>no-guess</code></td><td>line logic finishes the grid; accepted</td></tr>
-<tr><td><code>unique-but-not-line-solvable</code></td><td>exactly one solution, but line logic stalls. Often still finishable by the suppose-and-contradict step; rejected either way</td></tr>
-<tr><td><code>ambiguous</code></td><td>more than one solution, so no amount of deduction settles it; rejected</td></tr>
-</table>
-<p>This is a well-known technique in constraint-solving circles (it is exactly line-and-column
-constraint propagation, no search), but most puzzle generators skip the "keep going until nothing
-moves, then check nothing is left blank" step and stop at uniqueness because uniqueness is
-cheaper to compute. The cost of skipping it lands on the solver, three-quarters of the way
-through the grid, in pen.</p>
-
-<footer>
-<p>I write puzzle books and kept hitting this exact wall, so I built a command-line tool that
-runs this check on every puzzle before it goes in a book: point it at a folder of your own
-pictures and it returns a print-ready interior PDF where every single puzzle is graded
-<code>no-guess</code>, with a repair pass for the ones that would otherwise fail and a report of
-what it changed. Runs on macOS/Windows/Linux, Python only, nothing to install beyond that.</p>
-<p><a href="https://payhip.com/b/enbgi">No-Guess Nonogram Toolkit on Payhip</a> &mdash; $29, self-test included so you can verify the claim above on your own machine before trusting it on your own puzzles.</p>
-</footer>
+<h1>This page moved</h1>
+<p>Why a unique-solution nonogram can still force a guess now lives at <a href="https://minty-modesty.github.io/nonogram-no-guess-check/">https://minty-modesty.github.io/nonogram-no-guess-check/</a>.</p>
+<p>The old address keeps working so existing links do not break, but it only forwards here.</p>
 </main>
+<script>location.replace("https://minty-modesty.github.io/nonogram-no-guess-check/");</script>
 </body>
 </html>
